@@ -34,6 +34,7 @@ export default class Header extends Component {
 
 	goHome = this.linkTo('/');
 	goToMyProfile = this.linkTo('/profile');
+	goToScanner = this.linkTo('/scanner');
 
 	toggleDarkTheme = () => {
 		this.setState(
@@ -60,7 +61,7 @@ export default class Header extends Component {
 							<Toolbar.Icon menu onClick={this.openDrawer}>
 								menu
 							</Toolbar.Icon>
-							<Toolbar.Title>Preact app</Toolbar.Title>
+							<Toolbar.Title>TiECON</Toolbar.Title>
 						</Toolbar.Section>
 						<Toolbar.Section align-end onClick={this.openSettings}>
 							<Toolbar.Icon>settings</Toolbar.Icon>
@@ -77,6 +78,10 @@ export default class Header extends Component {
 							<List.LinkItem onClick={this.goToMyProfile}>
 								<List.ItemIcon>account_circle</List.ItemIcon>
 								Profile
+							</List.LinkItem>
+							<List.LinkItem onClick={this.goToScanner}>
+								<List.ItemIcon>account_circle</List.ItemIcon>
+								Scanner
 							</List.LinkItem>
 						</List>
 					</Drawer.TemporaryDrawerContent>
