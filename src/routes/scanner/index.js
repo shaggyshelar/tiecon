@@ -2,16 +2,22 @@ import { h, Component } from 'preact';
 import Button from 'preact-material-components/Button';
 import Select from 'preact-material-components/Select';
 import 'preact-material-components/Button/style.css';
+import style from './style';
+import Snackbar from 'preact-material-components/Snackbar';
+import LayoutGrid from 'preact-material-components/LayoutGrid';
+import 'preact-material-components/LayoutGrid/style.css';
 import 'preact-material-components/Menu/style.css';
 import 'preact-material-components/Select/style.css';
-import style from './style';
-// import instascan from 'instascan';
+import 'preact-material-components/Snackbar/style.css';
 
 export default class Scanner extends Component {
 	state = {
 		count: 10,
-		scanner: {},
-		cameras: []
+		scanner: null,
+		cameras: [],
+		selectedCameraIndex: 0,
+		disableStartButton: true,
+		isScanning: false
 	};
 
 	// gets called when this route is navigated to
@@ -23,60 +29,95 @@ export default class Scanner extends Component {
 	}
 
 	componentWillMount() {
-		const script = document.createElement("script");
-		//script.src = "https://rawgit.com/schmich/instascan-builds/master/instascan.min.js";
-		script.src = "/assets/instascan.min.js";
+		const script = document.createElement('script');
+		script.src = '/assets/instascan.min.js';
 		script.async = true;
 		let thisState = this;
 	
 		script.onload = function() {
-			Instascan.Camera.getCameras().then(function (cameras) {
+			Instascan.Camera.getCameras().then((cameras) => {
 				if (cameras.length > 0) {
 					thisState.setState({ cameras });
-				} else {
+				}
+				else {
 					alert('no camera');
 				}
-			}).catch(function (e) {
-			console.error(e);
+			}).catch((e) => {
+				console.error(e);
 			});
 		};
 	
 		document.body.appendChild(script);
 	}
 
-	startScanner = () => {
-		let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
-		scanner.addListener('scan', (content) => {
-			console.log(content);
+	showSnack = (content) => {
+		console.log('Contexnt', content);
+		this.bar.MDComponent.show({
+			message: 'Hello Snack!'
 		});
-		this.setState({ scanner });
+	}
+
+	toggleScanner = () => {
+		if (!this.state.scanner) {
+			let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+			scanner.addListener('scan', (content) => {
+				this.showSnack(content);
+			});
+			this.setState({ scanner });
+		}
+		if (!this.state.isScanning) {
+			this.state.scanner.start(this.state.cameras[this.state.selectedCameraIndex]);
+			this.setState({ isScanning: true });
+			this.bar.MDComponent.show({
+				message: 'Starting scanning...'
+			});
+		} else {
+			this.state.scanner.stop();
+			this.setState({ isScanning: false });
+			this.bar.MDComponent.show({
+				message: 'Stopped scanning...'
+			});
+		}
 	};
 
 	onSelectChange = (e) => {
-		console.log('Index', e.selectedIndex);
-		console.log('this.state.scanner', this.state.scanner);
-		this.state.scanner.start(this.state.cameras[0]);
+		this.setState({ disableStartButton: false, selectedCameraIndex: e.selectedIndex });
 	}
 
 	render({}, { time, count }) {
 		return (
 			<div class={style.profile}>
-				<h1>Scanner: </h1>
-				<p> Please select camera.
-				<Select hintText="Select an option"
-					selectedIndex={this.state.chosenIndex}
-					onChange={this.onSelectChange}
-				>
-					<Select.Item>opt1</Select.Item>
-					<Select.Item>opt2</Select.Item>
-					<Select.Item>opt3</Select.Item>
-					<Select.Item>opt4</Select.Item>
-				</Select>
-				</p>
-				<p><video id="preview" /></p>
-				<p>
-					<Button raised ripple onClick={this.startScanner}>Start Scanner</Button>
-				</p>
+				<LayoutGrid>
+					<LayoutGrid.Inner>
+						<LayoutGrid.Cell cols="4">
+							<Select hintText="Select"
+								selectedIndex={this.state.chosenIndex}
+								onChange={this.onSelectChange}
+							>
+								{
+									this.state.cameras.map((camera, index) => (
+										<Select.Item>Camera { index }</Select.Item>
+									))
+								}
+							</Select>
+						</LayoutGrid.Cell>
+						<LayoutGrid.Cell cols="1">
+							<Button raised ripple onClick={this.toggleScanner} disabled={this.state.disableStartButton}>
+								{
+									this.state.isScanning ? 'Stop Scanner' : 'Start Scanner'
+								}
+							</Button>
+						</LayoutGrid.Cell>
+					</LayoutGrid.Inner>
+					<LayoutGrid.Inner>
+						<LayoutGrid.Cell cols="1" />
+						<LayoutGrid.Cell cols="10">
+							<video id="preview" />
+						</LayoutGrid.Cell>
+						<LayoutGrid.Cell cols="1" />
+					</LayoutGrid.Inner>
+				</LayoutGrid>
+				<Snackbar ref={bar => {this.bar=bar;}} />
 			</div>
 		);
 	}
