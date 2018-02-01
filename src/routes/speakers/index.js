@@ -7,7 +7,7 @@ export default class Speakers extends Component {
 		usersList: []
 	};
 
-	firebaseInitialized = (content) =>  {
+	firebaseInitialized = () =>  {
 		let db = firebase.firestore();
 		db.collection('users').get().then((usersList) => {
 			let users = [];
@@ -19,7 +19,11 @@ export default class Speakers extends Component {
 	}
 
 	componentDidMount() {
-		window.addEventListener('firebaseInitialized', this.firebaseInitialized);
+		if (window.firebaseInitialized) {
+			this.firebaseInitialized();
+		} else {
+			window.addEventListener('firebaseInitialized', this.firebaseInitialized);
+		}
 	}
 
 	componentWillUnmount() {

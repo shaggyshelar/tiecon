@@ -36,6 +36,7 @@ export default class App extends Component {
 					messagingSenderId: '489302991624'
 				};
 				firebase.initializeApp(config);
+				window.firebaseInitialized = true;
 				window.dispatchEvent(new Event('firebaseInitialized'));
 			};
 			document.body.appendChild(firestoreScript);
