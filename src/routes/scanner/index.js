@@ -21,9 +21,7 @@ export default class Scanner extends Component {
 	};
 
 	firebaseInitialized = (content) =>  {
-		console.log('firebase', firebase);
 		let db = firebase.firestore();
-		console.warn('db', db);
 		db.collection('users').add({
 			first: 'Ada',
 			last: 'Lovelace',

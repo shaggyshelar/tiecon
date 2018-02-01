@@ -35,6 +35,7 @@ export default class Header extends Component {
 	goHome = this.linkTo('/');
 	goToMyProfile = this.linkTo('/profile');
 	goToScanner = this.linkTo('/scanner');
+	goToSpeakers = this.linkTo('/speakers');
 
 	toggleDarkTheme = () => {
 		this.setState(
@@ -82,6 +83,10 @@ export default class Header extends Component {
 							<List.LinkItem onClick={this.goToScanner}>
 								<List.ItemIcon>account_circle</List.ItemIcon>
 								Scanner
+							</List.LinkItem>
+							<List.LinkItem onClick={this.goToSpeakers}>
+								<List.ItemIcon>account_circle</List.ItemIcon>
+								Speakers
 							</List.LinkItem>
 						</List>
 					</Drawer.TemporaryDrawerContent>
