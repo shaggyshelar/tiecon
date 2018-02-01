@@ -20,12 +20,31 @@ export default class Scanner extends Component {
 		isScanning: false
 	};
 
+	firebaseInitialized = (content) =>  {
+		console.log('firebase', firebase);
+		let db = firebase.firestore();
+		console.warn('db', db);
+		db.collection('users').add({
+			first: 'Ada',
+			last: 'Lovelace',
+			born: 1815
+		})
+			.then((docRef) => {
+				console.log('Document written with ID: ', docRef.id);
+			})
+			.catch((error) => {
+				console.error('Error adding document: ', error);
+			});
+	}
+
 	// gets called when this route is navigated to
 	componentDidMount() {
+		window.addEventListener('firebaseInitialized', this.firebaseInitialized);
 	}
 
 	// gets called just before navigating away from the route
 	componentWillUnmount() {
+		window.removeEventListener('firebaseInitialized', this.handleMouseClick);
 	}
 
 	componentWillMount() {

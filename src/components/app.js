@@ -17,6 +17,31 @@ export default class App extends Component {
 		this.currentUrl = e.url;
 	};
 
+	componentDidMount() {
+		const firebaseScript = document.createElement('script');
+		firebaseScript.src = 'https://www.gstatic.com/firebasejs/4.9.0/firebase.js';
+		firebaseScript.async = true;
+		firebaseScript.onload = function() {
+			const firestoreScript = document.createElement('script');
+			firestoreScript.src = 'https://www.gstatic.com/firebasejs/4.9.0/firebase-firestore.js';
+			firestoreScript.async = true;
+			firestoreScript.onload = function() {
+				let config = {
+					apiKey: 'AIzaSyDM4bfZawYFEvNsYlNyNZLEfTPSPsbtUkQ',
+					authDomain: 'tiecon-b3493.firebaseapp.com',
+					databaseURL: 'https://tiecon-b3493.firebaseio.com',
+					projectId: 'tiecon-b3493',
+					storageBucket: 'tiecon-b3493.appspot.com',
+					messagingSenderId: '489302991624'
+				};
+				firebase.initializeApp(config);
+				window.dispatchEvent(new Event('firebaseInitialized'));
+			};
+			document.body.appendChild(firestoreScript);
+		};
+		document.body.appendChild(firebaseScript);
+	}
+
 	render() {
 		return (
 			<div id="app">
