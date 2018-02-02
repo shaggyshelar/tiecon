@@ -34,6 +34,8 @@ export default class Header extends Component {
 	goToScanner = this.linkTo('/scanner');
 	goToSpeakers = this.linkTo('/speakers');
 	goToNotifications = this.linkTo('/notifications');
+	goToLogin = this.linkTo('/login');
+	
 
 	toggleDarkTheme = () => {
 		this.setState(
@@ -94,6 +96,10 @@ export default class Header extends Component {
 							<List.LinkItem onClick={this.goToNotifications}>
 								<List.ItemIcon>notifications</List.ItemIcon>
 								Notifications
+							</List.LinkItem>
+							<List.LinkItem onClick={this.goToLogin}>
+								<List.ItemIcon>exit_to_app</List.ItemIcon>
+								Login
 							</List.LinkItem>
 							<List.LinkItem>
 								<List.ItemIcon>dashboard</List.ItemIcon>

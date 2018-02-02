@@ -7,6 +7,7 @@ import Profile from '../routes/profile';
 import Scanner from '../routes/scanner';
 import Speakers from '../routes/speakers';
 import Notifications from '../routes/notifications';
+import Login from '../routes/login';
 
 // import Home from 'async!../routes/home';
 // import Profile from 'async!../routes/profile';
@@ -41,20 +42,15 @@ export default class App extends Component {
 				const messaging = firebase.messaging();
 				messaging.requestPermission()
 					.then(() => {
-						console.log('Notification permission granted.');
 						messaging.getToken()
 							.then((currentToken) => {
 								if (currentToken) {
-									console.log('Token');
-									console.log(currentToken);
 									let db = firebase.firestore();
-									let cityRef = db.collection('cities').doc(currentToken);
+									let cityRef = db.collection('tokens').doc(currentToken);
 									let setWithMerge = cityRef.set({
-										id: currentToken
+										id: currentToken,
+										userId: ''
 									}, { merge: true });
-									messaging.onMessage((payload) => {
-										alert('msdfsdfsdfsed');
-									});
 								} else {
 									console.log('No Instance ID token available. Request permission to generate one.');
 									// Show permission UI.
@@ -88,7 +84,8 @@ export default class App extends Component {
 					<Profile path="/profile/:user" />
 					<Scanner path="/scanner" />
 					<Speakers path="/speakers" />
-					<Notifications path="/notifications" />					
+					<Notifications path="/notifications" />
+					<Login path="/login" />
 				</Router>
 			</div>
 		);
