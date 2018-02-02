@@ -17,8 +17,12 @@ export default class Login extends Component {
 	}
 
 	onLogin = () => {
-		console.log('Username='+ this.state.email);
-		console.log('Username='+ this.state.password);
+		firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).catch((error) => {
+			let errorCode = error.code;
+			let errorMessage = error.message;
+			console.log('errorCode', errorCode);
+			console.log('errorMessage', errorMessage);
+		});
 	}
 	
 	componentDidMount() {

@@ -66,6 +66,26 @@ export default class App extends Component {
 				messaging.onMessage((payload) => {
 					alert('message received');
 				});
+				firebase.auth().onAuthStateChanged((user) => {
+					if (user) {
+						// User is signed in.
+						let userDetails = {
+							displayName: user.displayName,
+							email: user.email,
+							emailVerified: user.emailVerified,
+							photoURL: user.photoURL,
+							isAnonymous: user.isAnonymous,
+							uid: user.uid,
+							providerData: user.providerData,
+						};
+						window.userDetails = userDetails;
+					}
+					else {
+						window.userDetails = null;
+					}
+					window.dispatchEvent(new Event('onAuthStateChanged'));
+				});
+				  
 				window.firebaseInitialized = true;
 				window.dispatchEvent(new Event('firebaseInitialized'));
 			};

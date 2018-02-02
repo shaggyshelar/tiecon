@@ -40,7 +40,7 @@ export default class Notifications extends Component {
 	}
 
 	componentWillUnmount() {
-		window.removeEventListener('firebaseInitialized', this.handleMouseClick);
+		window.removeEventListener('firebaseInitialized', this.firebaseInitialized);
 	}
 
 	render({}, { }) {
