@@ -6,6 +6,8 @@ import Home from '../routes/home';
 import Profile from '../routes/profile';
 import Scanner from '../routes/scanner';
 import Speakers from '../routes/speakers';
+import Notifications from '../routes/notifications';
+
 // import Home from 'async!../routes/home';
 // import Profile from 'async!../routes/profile';
 
@@ -36,6 +38,38 @@ export default class App extends Component {
 					messagingSenderId: '489302991624'
 				};
 				firebase.initializeApp(config);
+				const messaging = firebase.messaging();
+				messaging.requestPermission()
+					.then(() => {
+						console.log('Notification permission granted.');
+						messaging.getToken()
+							.then((currentToken) => {
+								if (currentToken) {
+									console.log('Token');
+									console.log(currentToken);
+									let db = firebase.firestore();
+									let cityRef = db.collection('cities').doc(currentToken);
+									let setWithMerge = cityRef.set({
+										id: currentToken
+									}, { merge: true });
+									messaging.onMessage((payload) => {
+										alert('msdfsdfsdfsed');
+									});
+								} else {
+									console.log('No Instance ID token available. Request permission to generate one.');
+									// Show permission UI.
+								}
+							})
+							.catch((err) => {
+				  		console.log('An error occurred while retrieving token. ', err);
+							});
+					})
+					.catch((err) => {
+						console.log('Unable to get permission to notify.', err);
+					});
+				messaging.onMessage((payload) => {
+					alert('message received');
+				});
 				window.firebaseInitialized = true;
 				window.dispatchEvent(new Event('firebaseInitialized'));
 			};
@@ -54,6 +88,7 @@ export default class App extends Component {
 					<Profile path="/profile/:user" />
 					<Scanner path="/scanner" />
 					<Speakers path="/speakers" />
+					<Notifications path="/notifications" />					
 				</Router>
 			</div>
 		);
