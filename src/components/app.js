@@ -20,11 +20,11 @@ export default class App extends Component {
 
 	componentDidMount() {
 		const firebaseScript = document.createElement('script');
-		firebaseScript.src = 'https://www.gstatic.com/firebasejs/4.9.0/firebase.js';
+		firebaseScript.src = '/assets/firebase.js';
 		firebaseScript.async = true;
 		firebaseScript.onload = function() {
 			const firestoreScript = document.createElement('script');
-			firestoreScript.src = 'https://www.gstatic.com/firebasejs/4.9.0/firebase-firestore.js';
+			firestoreScript.src = '/assets/firebase-firestore.js';
 			firestoreScript.async = true;
 			firestoreScript.onload = function() {
 				let config = {
