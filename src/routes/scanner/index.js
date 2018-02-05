@@ -17,6 +17,9 @@ export default class Scanner extends Component {
 		count: 10,
 		scanner: null,
 		cameras: [],
+		availableRooms: [{ id: 1, name: 'ConfRoom 1' },{ id: 2, name: 'ConfRoom 2' },
+			{ id: 3, name: 'ConfRoom 3' }, { id: 4, name: 'ConfRoom 4' }],
+		availableEvents: [{ id: 1, name: 'Entry' }, { id: 2, name: 'Exit' }],
 		scannedResult: null,
 		selectedCameraIndex: 0,
 		disableStartButton: true,
@@ -89,12 +92,10 @@ export default class Scanner extends Component {
 		// 	});
 	}
 
-	// gets called when this route is navigated to
 	componentDidMount() {
 		window.addEventListener('firebaseInitialized', this.firebaseInitialized);
 	}
 
-	// gets called just before navigating away from the route
 	componentWillUnmount() {
 		window.removeEventListener('firebaseInitialized', this.firebaseInitialized);
 	}
@@ -158,6 +159,28 @@ export default class Scanner extends Component {
 		this.setState({ disableStartButton: false, selectedCameraIndex: e.selectedIndex });
 	}
 
+	onEventChange = (e) => {
+		this.setState({ selectedEventIndex: e.selectedIndex });
+	}
+
+	onConfRoomChange = (e) => {
+		this.setState({ selectedRoomIndex: e.selectedIndex });
+	}
+
+	getSelectedRoom = (e) => {
+		if (this.state.selectedRoomIndex >= 0) {
+			return this.state.availableRooms[this.state.selectedRoomIndex].name;
+		}
+		return '';
+	}
+
+	getSelectedEvent = (e) => {
+		if (this.state.selectedEventIndex >= 0) {
+			return this.state.availableEvents[this.state.selectedEventIndex].name;
+		}
+		return '';
+	}
+
 	render({}, { time, count }) {
 		return (
 			<div class={style.profile}>
@@ -184,18 +207,41 @@ export default class Scanner extends Component {
 						</LayoutGrid.Cell>
 					</LayoutGrid.Inner>
 					<LayoutGrid.Inner>
-						<LayoutGrid.Cell cols="1" />
-						<LayoutGrid.Cell cols="10">
+						<LayoutGrid.Cell cols="4">
+							<Select hintText="Select Room"
+								onChange={this.onConfRoomChange} 
+							>
+								{
+									this.state.availableRooms.map((room, index) => (
+										<Select.Item>{ room.name }</Select.Item>
+									))
+								}
+							</Select>
+						</LayoutGrid.Cell>
+						<LayoutGrid.Cell cols="4">
+							<Select hintText="Select Event"
+								onChange={this.onEventChange}
+							>
+								{
+									this.state.availableEvents.map((event, index) => (
+										<Select.Item>{ event.name }</Select.Item>
+									))
+								}
+							</Select>
+						</LayoutGrid.Cell>
+					</LayoutGrid.Inner>
+					<LayoutGrid.Inner>
+						<LayoutGrid.Cell cols="12">
 							<video id="preview" />
 						</LayoutGrid.Cell>
-						<LayoutGrid.Cell cols="1" />
 					</LayoutGrid.Inner>
 				</LayoutGrid>
 				<Dialog ref={this.dialogRef}>
 					<Dialog.Header>{this.state.scannedResult ? this.state.scannedResult.fn : null }</Dialog.Header>
 					<Dialog.Body>
 						<div>
-							Name: 
+							Conf Room: { this.getSelectedRoom() } <br />
+							Event: { this.getSelectedEvent() } <br />
 						</div>
 					</Dialog.Body>
 					<Dialog.Footer>
