@@ -5,34 +5,88 @@ import 'preact-material-components/Button/style.css';
 import style from './style';
 import Snackbar from 'preact-material-components/Snackbar';
 import LayoutGrid from 'preact-material-components/LayoutGrid';
+import Dialog from 'preact-material-components/Dialog';
 import 'preact-material-components/LayoutGrid/style.css';
 import 'preact-material-components/Menu/style.css';
 import 'preact-material-components/Select/style.css';
 import 'preact-material-components/Snackbar/style.css';
+import 'preact-material-components/Dialog/style.css';
 
 export default class Scanner extends Component {
 	state = {
 		count: 10,
 		scanner: null,
 		cameras: [],
+		scannedResult: null,
 		selectedCameraIndex: 0,
 		disableStartButton: true,
-		isScanning: false
+		isScanning: false,
+		isDialogShown: false
 	};
 
+	setVCardDetails = (scannedResult) => {
+		let Re1 = /^(version|fn|title|org):(.+)$/i;
+		let Re2 = /^([^:;]+);([^:]+):(.+)$/;
+		let ReKey = /item\d{1,2}\./;
+		let fields = {};
+		scannedResult.split(/\r\n|\r|\n/).forEach((line) => {
+			let results, key;
+			if (Re1.test(line)) {
+				results = line.match(Re1);
+				key = results[1].toLowerCase();
+				fields[key] = results[2];
+			} else if (Re2.test(line)) {
+				results = line.match(Re2);
+				key = results[1].replace(ReKey, '').toLowerCase();
+	
+				let meta = {};
+				results[2].split(';')
+					.map((p, i) => {
+						let match = p.match(/([a-z]+)=(.*)/i);
+						if (match) {
+							return [match[1], match[2]];
+						}
+						return ['TYPE' + (i === 0 ? '' : i), p];
+						
+					})
+					.forEach((p) => {
+						meta[p[0]] = p[1];
+					});
+	
+				if (!fields[key]) fields[key] = [];
+	
+				fields[key].push({
+					meta,
+					value: results[3].split(';')
+				});
+			}
+		});
+		this.setState({ scannedResult: fields });
+	}
+
+	openSettings = () => {
+		this.dialog.MDComponent.show();
+	};
+
+	onConfirmScan = () => {
+		this.setState({ isDialogShown: false });
+	}
+	
+	dialogRef = dialog => (this.dialog = dialog);
+
 	firebaseInitialized = (content) =>  {
-		let db = firebase.firestore();
-		db.collection('users').add({
-			first: 'Ada',
-			last: 'Lovelace',
-			born: 1815
-		})
-			.then((docRef) => {
-				console.log('Document written with ID: ', docRef.id);
-			})
-			.catch((error) => {
-				console.error('Error adding document: ', error);
-			});
+		// let db = firebase.firestore();
+		// db.collection('users').add({
+		// 	first: 'Ada',
+		// 	last: 'Lovelace',
+		// 	born: 1815
+		// })
+		// 	.then((docRef) => {
+		// 		console.log('Document written with ID: ', docRef.id);
+		// 	})
+		// 	.catch((error) => {
+		// 		console.error('Error adding document: ', error);
+		// 	});
 	}
 
 	// gets called when this route is navigated to
@@ -42,7 +96,7 @@ export default class Scanner extends Component {
 
 	// gets called just before navigating away from the route
 	componentWillUnmount() {
-		window.removeEventListener('firebaseInitialized', this.handleMouseClick);
+		window.removeEventListener('firebaseInitialized', this.firebaseInitialized);
 	}
 
 	componentWillMount() {
@@ -61,14 +115,13 @@ export default class Scanner extends Component {
 				}
 			}).catch((e) => {
 				console.error(e);
-			});
+			});	
 		};
 	
 		document.body.appendChild(script);
 	}
 
 	showSnack = (content) => {
-		console.log('Contexnt', content);
 		this.bar.MDComponent.show({
 			message: 'Hello Snack!'
 		});
@@ -77,8 +130,12 @@ export default class Scanner extends Component {
 	toggleScanner = () => {
 		if (!this.state.scanner) {
 			let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
-			scanner.addListener('scan', (content) => {
-				this.showSnack(content);
+			scanner.addListener('scan', (scannedResult) => {
+				if (!this.state.isDialogShown) {
+					this.setState({ isDialogShown: true });
+					this.setVCardDetails(scannedResult);
+					this.openSettings();
+				}
 			});
 			this.setState({ scanner });
 		}
@@ -134,6 +191,17 @@ export default class Scanner extends Component {
 						<LayoutGrid.Cell cols="1" />
 					</LayoutGrid.Inner>
 				</LayoutGrid>
+				<Dialog ref={this.dialogRef}>
+					<Dialog.Header>{this.state.scannedResult ? this.state.scannedResult.fn : null }</Dialog.Header>
+					<Dialog.Body>
+						<div>
+							Name: 
+						</div>
+					</Dialog.Body>
+					<Dialog.Footer>
+						<Dialog.FooterButton accept onClick={this.onConfirmScan}>okay</Dialog.FooterButton>
+					</Dialog.Footer>
+				</Dialog>
 				<Snackbar ref={bar => {this.bar=bar;}} />
 			</div>
 		);
