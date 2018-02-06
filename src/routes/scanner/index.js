@@ -72,6 +72,21 @@ export default class Scanner extends Component {
 	};
 
 	onConfirmScan = () => {
+		if (window.userDetails !== null) {
+			let db = firebase.firestore();
+			let eventName = this.getSelectedEvent();
+			let confRoomName = this.getSelectedRoom();
+			db.collection('usersInEvent').doc(window.userDetails.uid).set({
+				EventName: eventName,
+				ConfRoom: confRoomName
+			})
+				.then((docRef) => {
+					console.log('User Event Details Updated: ');
+				})
+				.catch((error) => {
+					console.error('Error updating User Event Details ', error);
+				});
+		}
 		this.setState({ isDialogShown: false });
 	}
 	
