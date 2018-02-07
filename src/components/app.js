@@ -8,6 +8,7 @@ import Scanner from '../routes/scanner';
 import Speakers from '../routes/speakers';
 import Notifications from '../routes/notifications';
 import Login from '../routes/login';
+import Dashboard from '../routes/dashboard';
 
 // import Home from 'async!../routes/home';
 // import Profile from 'async!../routes/profile';
@@ -106,6 +107,7 @@ export default class App extends Component {
 					<Speakers path="/speakers" />
 					<Notifications path="/notifications" />
 					<Login path="/login" />
+					<Dashboard path="/dashboard" />
 				</Router>
 			</div>
 		);

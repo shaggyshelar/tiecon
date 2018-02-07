@@ -35,7 +35,7 @@ export default class Header extends Component {
 	goToSpeakers = this.linkTo('/speakers');
 	goToNotifications = this.linkTo('/notifications');
 	goToLogin = this.linkTo('/login');
-	
+	goToDashboard = this.linkTo('/dashboard');
 
 	toggleDarkTheme = () => {
 		this.setState(
@@ -101,7 +101,7 @@ export default class Header extends Component {
 								<List.ItemIcon>exit_to_app</List.ItemIcon>
 								Login
 							</List.LinkItem>
-							<List.LinkItem>
+							<List.LinkItem onClick={this.goToDashboard}>
 								<List.ItemIcon>dashboard</List.ItemIcon>
 								Dashboard
 							</List.LinkItem>
