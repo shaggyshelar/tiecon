@@ -21,7 +21,6 @@ export default class Scanner extends Component {
 			{ id: 3, name: 'ConfRoom 3' }, { id: 4, name: 'ConfRoom 4' }],
 		availableEvents: [{ id: 1, name: 'Entry' }, { id: 2, name: 'Exit' }],
 		scannedResult: null,
-		selectedCameraIndex: 0,
 		disableStartButton: true,
 		isScanning: false,
 		isDialogShown: false
@@ -197,12 +196,27 @@ export default class Scanner extends Component {
 
 	render({}, { time, count }) {
 		return (
+			// <Select hintText="Select Event"
+			// 	selectedIndex={this.state.chosenIndex}
+			// 	onChange={(e)=>{
+			// 		this.setState({
+			// 		chosenIndex: e.selectedIndex
+			// 		});
+			// 		//selected options
+			// 		console.log(e.selectedOptions);
+			// 	}}>
+			// 	{
+			// 		this.state.availableEvents.map((event, index) => (
+			// 			<Select.Item>{ event.name }</Select.Item>
+			// 		))
+			// 	}
+			// </Select>
 			<div class={style.profile}>
 				<LayoutGrid>
 					<LayoutGrid.Inner>
 						<LayoutGrid.Cell cols="4">
 							<Select hintText="Select"
-								selectedIndex={this.state.chosenIndex}
+								selectedIndex={this.state.selectedCameraIndex}
 								onChange={this.onSelectChange}
 							>
 								{
@@ -223,6 +237,7 @@ export default class Scanner extends Component {
 					<LayoutGrid.Inner>
 						<LayoutGrid.Cell cols="4">
 							<Select hintText="Select Room"
+								selectedIndex={this.state.selectedRoomIndex}
 								onChange={this.onConfRoomChange} 
 							>
 								{
@@ -234,6 +249,7 @@ export default class Scanner extends Component {
 						</LayoutGrid.Cell>
 						<LayoutGrid.Cell cols="4">
 							<Select hintText="Select Event"
+								selectedIndex={this.state.selectedEventIndex}
 								onChange={this.onEventChange}
 							>
 								{
