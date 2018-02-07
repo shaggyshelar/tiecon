@@ -21,12 +21,9 @@ export default class Header extends Component {
 	}
 
 	openDrawer = () => (this.drawer.MDComponent.open = true);
-
 	openSettings = () => this.dialog.MDComponent.show();
-
 	drawerRef = drawer => (this.drawer = drawer);
 	dialogRef = dialog => (this.dialog = dialog);
-
 	linkTo = path => () => {
 		route(path);
 		this.closeDrawer();
@@ -35,6 +32,10 @@ export default class Header extends Component {
 	goHome = this.linkTo('/');
 	goToMyProfile = this.linkTo('/profile');
 	goToScanner = this.linkTo('/scanner');
+	goToSpeakers = this.linkTo('/speakers');
+	goToNotifications = this.linkTo('/notifications');
+	goToLogin = this.linkTo('/login');
+	goToDashboard = this.linkTo('/dashboard');
 
 	toggleDarkTheme = () => {
 		this.setState(
@@ -63,8 +64,9 @@ export default class Header extends Component {
 							</Toolbar.Icon>
 							<Toolbar.Title>TiECON</Toolbar.Title>
 						</Toolbar.Section>
-						<Toolbar.Section align-end onClick={this.openSettings}>
-							<Toolbar.Icon>settings</Toolbar.Icon>
+						<Toolbar.Section align-end>
+							<Toolbar.Icon onClick={this.goToNotifications}>notifications</Toolbar.Icon>
+							<Toolbar.Icon onClick={this.openSettings}>settings</Toolbar.Icon>
 						</Toolbar.Section>
 					</Toolbar.Row>
 				</Toolbar>
@@ -82,6 +84,30 @@ export default class Header extends Component {
 							<List.LinkItem onClick={this.goToScanner}>
 								<List.ItemIcon>account_circle</List.ItemIcon>
 								Scanner
+							</List.LinkItem>
+							<List.LinkItem>
+								<List.ItemIcon>event</List.ItemIcon>
+								Events
+							</List.LinkItem>
+							<List.LinkItem onClick={this.goToSpeakers}>
+								<List.ItemIcon>perm_identity</List.ItemIcon>
+								Speakers
+							</List.LinkItem>
+							<List.LinkItem onClick={this.goToNotifications}>
+								<List.ItemIcon>notifications</List.ItemIcon>
+								Notifications
+							</List.LinkItem>
+							<List.LinkItem onClick={this.goToLogin}>
+								<List.ItemIcon>exit_to_app</List.ItemIcon>
+								Login
+							</List.LinkItem>
+							<List.LinkItem onClick={this.goToDashboard}>
+								<List.ItemIcon>dashboard</List.ItemIcon>
+								Dashboard
+							</List.LinkItem>
+							<List.LinkItem>
+								<List.ItemIcon>build</List.ItemIcon>
+								Admin
 							</List.LinkItem>
 						</List>
 					</Drawer.TemporaryDrawerContent>
