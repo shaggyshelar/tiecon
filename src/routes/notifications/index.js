@@ -1,6 +1,8 @@
 import { h, Component } from 'preact';
 import List from 'preact-material-components/List';
+import Snackbar from 'preact-material-components/Snackbar';
 import 'preact-material-components/List/style.css';
+import 'preact-material-components/Snackbar/style.css';
 
 export default class Notifications extends Component {
 	state = {
@@ -8,26 +10,36 @@ export default class Notifications extends Component {
 	};
 
 	firebaseInitialized = () =>  {
-		// const messaging = firebase.messaging();
-		// messaging.requestPermission()
-		// 	.then(() => {
-		// 		console.log('Notification permission granted.');
-		// 		messaging.getToken()
-		// 			.then((currentToken) => {
-		// 				if (currentToken) {
-		// 					console.log('currentToken', currentToken);
-		// 				} else {
-		// 					console.log('No Instance ID token available. Request permission to generate one.');
-		// 					// Show permission UI.
-		// 				}
-		// 			})
-		// 			.catch((err) => {
-		// 		  		console.log('An error occurred while retrieving token. ', err);
-		// 			});
-		// 	})
-		// 	.catch((err) => {
-		// 		console.log('Unable to get permission to notify.', err);
-		// 	});
+		const messaging = firebase.messaging();
+		messaging.requestPermission()
+			.then(() => {
+				this.bar.MDComponent.show({
+					message: 'Notification Permission Allowed'
+				});
+				messaging.getToken()
+					.then((currentToken) => {
+						if (currentToken) {
+							this.bar.MDComponent.show({
+								message: 'Token='+currentToken
+							});
+						} else {
+							this.bar.MDComponent.show({
+								message: 'No Instance ID token available. Request permission to generate one.'
+							});
+						}
+					})
+					.catch((err) => {
+						this.bar.MDComponent.show({
+							message: 'An error occurred while retrieving token'
+						});
+				  		//console.log('An error occurred while retrieving token. ', err);
+					});
+			})
+			.catch((err) => {
+				this.bar.MDComponent.show({
+					message: 'Notification Permission Disabled'
+				});
+			});
 	}
 
 	componentDidMount() {
@@ -53,6 +65,7 @@ export default class Notifications extends Component {
 						))
 					}
 				</List>
+				<Snackbar ref={bar => {this.bar=bar;}} />
 			</div>
 		);
 	}

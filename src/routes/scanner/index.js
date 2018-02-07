@@ -195,22 +195,16 @@ export default class Scanner extends Component {
 	}
 
 	render({}, { time, count }) {
+		let cleft = 0;
+		let ctop = 0;
+		let ctrans = 'translate('+cleft+'px, '+ctop+'px)';
+		//var ctrans = 'scale(-1, 1)';
+		const divStyle = {
+			width: '100%',
+			height: '50%',
+			transform: ctrans
+		  };
 		return (
-			// <Select hintText="Select Event"
-			// 	selectedIndex={this.state.chosenIndex}
-			// 	onChange={(e)=>{
-			// 		this.setState({
-			// 		chosenIndex: e.selectedIndex
-			// 		});
-			// 		//selected options
-			// 		console.log(e.selectedOptions);
-			// 	}}>
-			// 	{
-			// 		this.state.availableEvents.map((event, index) => (
-			// 			<Select.Item>{ event.name }</Select.Item>
-			// 		))
-			// 	}
-			// </Select>
 			<div class={style.profile}>
 				<LayoutGrid>
 					<LayoutGrid.Inner>
@@ -262,7 +256,7 @@ export default class Scanner extends Component {
 					</LayoutGrid.Inner>
 					<LayoutGrid.Inner>
 						<LayoutGrid.Cell cols="12">
-							<video id="preview" />
+							<video id="preview" style={divStyle} />
 						</LayoutGrid.Cell>
 					</LayoutGrid.Inner>
 				</LayoutGrid>
