@@ -1,37 +1,40 @@
 import { h, Component } from 'preact';
 import List from 'preact-material-components/List';
 import 'preact-material-components/List/style.css';
+import Card from 'preact-material-components/Card';
+import 'preact-material-components/Card/style.css';
+import 'preact-material-components/Button/style.css';
+import _ from 'lodash';
 
 export default class Dashboard extends Component {
 	state = {
-		usersList: []
+		eventDetails: [],
+		usersInEvents: []
 	};
+
+	parseEventDetails = (events) =>  {
+		let parseEventDetails = [];
+		events.forEach((doc) => {
+			let confRoom = _.find(parseEventDetails, { confRoomName: doc.ConfRoom });
+			if (confRoom) {
+				confRoom.users.push(doc);
+			} else {
+				parseEventDetails.push({ confRoomName: doc.ConfRoom, users: [doc] });
+			}
+		});
+		this.setState({ 'eventDetails': parseEventDetails });
+	}
 
 	firebaseInitialized = () =>  {
 		let db = firebase.firestore();
-		// db.collection('usersInEvent').where('EventName', '==', 'Entry')
-		// 	.get()
-		// 	.then((querySnapshot) => {
-		// 		querySnapshot.forEach((doc) => {
-		// 			// doc.data() is never undefined for query doc snapshots
-		// 			console.log(doc.id, ' => ', doc.data());
-		// 		});
-		// 	})
-		// 	.catch((error) => {
-		// 		console.log('Error getting documents: ', error);
-		// 	});
 		db.collection('usersInEvent').where('EventName', '==', 'Entry')
 			.onSnapshot((querySnapshot) => {
 				let events = [];
 				querySnapshot.forEach((doc) => {
-					events.push(doc.data().Name);
-					console.log('Doc, ', doc.data());
+					events.push(doc.data());
 				});
-				console.log('Current users with entry: ', events.join(', '));
+				this.parseEventDetails(events);
 			});
-		// 	.catch((error) => {
-		// 		console.log('Error getting documents: ', error);
-		// 	});
 	}
 
 	componentDidMount() {
@@ -50,13 +53,26 @@ export default class Dashboard extends Component {
 	render({}, { }) {
 		return (
 			<div>
-				<List>
-					{
-						this.state.usersList.map((user, index) => (
-							<List.Item>{user.first}</List.Item>
-						))
-					}
-				</List>
+				{
+					this.state.eventDetails.map((eventDetail, index) => (
+						<Card>
+							<Card.Primary>
+								<Card.Title><h1>{ eventDetail.confRoomName}</h1></Card.Title>
+								<Card.Subtitle>Total Attendies: { eventDetail.users.length }</Card.Subtitle>
+							</Card.Primary>
+							<Card.Media className='card-media'>
+								{
+									eventDetail.users.map((user, index) => (
+										<div> {user.Name} </div>
+									))
+								}
+							</Card.Media>
+							{/* <Card.Actions>
+								<Card.Action>OKAY</Card.Action>
+							</Card.Actions> */}
+						</Card>
+					))
+				}
 			</div>
 		);
 	}
