@@ -19,6 +19,12 @@ export default class Notifications extends Component {
 				messaging.getToken()
 					.then((currentToken) => {
 						if (currentToken) {
+							let db = firebase.firestore();
+							let tokenRef = db.collection('tokens').doc(currentToken);
+							let setWithMerge = tokenRef.set({
+								id: currentToken,
+								userId: ''
+							}, { merge: true });
 							this.bar.MDComponent.show({
 								message: 'Token='+currentToken
 							});
