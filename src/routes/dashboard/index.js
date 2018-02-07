@@ -5,11 +5,22 @@ import Card from 'preact-material-components/Card';
 import 'preact-material-components/Card/style.css';
 import 'preact-material-components/Button/style.css';
 import _ from 'lodash';
+import { Bar } from 'react-chartjs-2';
+
 
 export default class Dashboard extends Component {
 	state = {
 		eventDetails: [],
-		usersInEvents: []
+		usersInEvents: [],
+		chartData: {
+			labels: ["January", "February", "March", "April", "May", "June", "July"],
+			datasets: [{
+				label: "My First dataset",
+				backgroundColor: 'rgb(255, 99, 132)',
+				borderColor: 'rgb(255, 99, 132)',
+				data: [0, 10, 5, 2, 20, 30, 45],
+			}]
+		}
 	};
 
 	parseEventDetails = (events) =>  {
@@ -73,6 +84,15 @@ export default class Dashboard extends Component {
 						</Card>
 					))
 				}
+
+				<Bar
+					data={this.state.chartData}
+					width={100}
+					height={50}
+					options={{
+						maintainAspectRatio: false
+					}}
+				/>
 			</div>
 		);
 	}
