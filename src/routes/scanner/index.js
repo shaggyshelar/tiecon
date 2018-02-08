@@ -17,13 +17,12 @@ export default class Scanner extends Component {
 		count: 10,
 		scanner: null,
 		cameras: [],
-		availableRooms: [{ id: 1, name: 'ConfRoom 1' },{ id: 2, name: 'ConfRoom 2' },
-			{ id: 3, name: 'ConfRoom 3' }, { id: 4, name: 'ConfRoom 4' }],
 		availableEvents: [{ id: 1, name: 'Entry' }, { id: 2, name: 'Exit' }],
 		scannedResult: null,
 		disableStartButton: true,
 		isScanning: false,
-		isDialogShown: false
+		isDialogShown: false,
+		confRooms: []
 	};
 
 	setVCardDetails = (scannedResult) => {
@@ -70,14 +69,27 @@ export default class Scanner extends Component {
 		this.dialog.MDComponent.show();
 	};
 
+	getConfRoom = (confRoomName) => {
+		let foundRoom = {};
+		this.state.confRooms.forEach((confRoom) => {
+			if (confRoom.Name == confRoomName) {
+				foundRoom = confRoom;
+			}
+		});
+		return foundRoom;
+	}
+
 	onConfirmScan = () => {
 		let db = firebase.firestore();
 		let eventName = this.getSelectedEvent();
 		let confRoomName = this.getSelectedRoom();
+		let confRoomDetails = this.getConfRoom(confRoomName);
+		let tags = this.state.scannedResult.title.split(',');
 		db.collection('usersInEvent').doc(this.state.scannedResult.fn).set({
 			EventName: eventName,
-			ConfRoom: confRoomName,
-			Name: this.state.scannedResult.fn
+			ConfRoom: confRoomDetails,
+			Name: this.state.scannedResult.fn,
+			Tags: tags
 		})
 			.then((docRef) => {
 				console.log('User Event Details Updated: ');
@@ -91,18 +103,15 @@ export default class Scanner extends Component {
 	dialogRef = dialog => (this.dialog = dialog);
 
 	firebaseInitialized = (content) =>  {
-		// let db = firebase.firestore();
-		// db.collection('users').add({
-		// 	first: 'Ada',
-		// 	last: 'Lovelace',
-		// 	born: 1815
-		// })
-		// 	.then((docRef) => {
-		// 		console.log('Document written with ID: ', docRef.id);
-		// 	})
-		// 	.catch((error) => {
-		// 		console.error('Error adding document: ', error);
-		// 	});
+		let db = firebase.firestore();
+		db.collection('conferenceRooms')
+			.onSnapshot((querySnapshot) => {
+				let confRooms = [];
+				querySnapshot.forEach((doc) => {
+					confRooms.push(doc.data());
+				});
+				this.setState({ confRooms });
+			});
 	}
 
 	componentDidMount() {
@@ -182,7 +191,7 @@ export default class Scanner extends Component {
 
 	getSelectedRoom = (e) => {
 		if (this.state.selectedRoomIndex >= 0) {
-			return this.state.availableRooms[this.state.selectedRoomIndex].name;
+			return this.state.confRooms[this.state.selectedRoomIndex].Name;
 		}
 		return '';
 	}
@@ -235,8 +244,8 @@ export default class Scanner extends Component {
 								onChange={this.onConfRoomChange} 
 							>
 								{
-									this.state.availableRooms.map((room, index) => (
-										<Select.Item>{ room.name }</Select.Item>
+									this.state.confRooms.map((room, index) => (
+										<Select.Item>{ room.Name }</Select.Item>
 									))
 								}
 							</Select>
@@ -266,6 +275,7 @@ export default class Scanner extends Component {
 						<div>
 							Conf Room: { this.getSelectedRoom() } <br />
 							Event: { this.getSelectedEvent() } <br />
+							Tags: { this.state.scannedResult ? this.state.scannedResult.title : '' } <br />
 						</div>
 					</Dialog.Body>
 					<Dialog.Footer>

@@ -8,14 +8,29 @@ export default class Speakers extends Component {
 	};
 
 	firebaseInitialized = () =>  {
-		let db = firebase.firestore();
-		db.collection('users').get().then((usersList) => {
-			let users = [];
-			usersList.forEach((doc) => {
-				users.push(doc.data());
-			});
-			this.setState({ usersList: users });
-		});
+		// let db = firebase.firestore();
+		// db.collection('users').get().then((usersList) => {
+		// 	let users = [];
+		// 	usersList.forEach((doc) => {
+		// 		users.push(doc.data());
+		// 	});
+		// 	this.setState({ usersList: users });
+		// });
+
+		// let timeStamp = new Date().getTime();
+		// console.log('Time', timeStamp);
+		// let db = firebase.firestore();
+		// db.collection('conferenceRooms').doc( ''+timeStamp).set({
+		// 	capacity: 10,
+		// 	id: timeStamp,
+		// 	Name: 'Conf Room'
+		// })
+		// 	.then((docRef) => {
+		// 		console.log('User Event Details Updated: ');
+		// 	})
+		// 	.catch((error) => {
+		// 		console.error('Error updating User Event Details ', error);
+		// 	});
 	}
 
 	componentDidMount() {
