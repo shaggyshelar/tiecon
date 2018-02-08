@@ -14,32 +14,7 @@ export default class Dashboard extends Component {
 	state = {
 		eventDetails: [],
 		usersInEvents: [],
-		confRooms: [],
-		barChartData: {
-			labels: availableTags,
-			datasets: [{
-				label: 'Present Users',
-				backgroundColor: 'rgb(255, 99, 132)',
-				borderColor: 'rgb(255, 99, 132)',
-				data: [2, 10, 5, 20, 30]
-			}]
-		},
-		doughnutChartData: {
-			labels: availableTags,
-			datasets: [{
-				data: [15, 20, 15],
-				backgroundColor: [
-					'#FF6384',
-					'#36A2EB',
-					'#FFCE56'
-				],
-				hoverBackgroundColor: [
-					'#FF6384',
-					'#36A2EB',
-					'#FFCE56'
-				]
-			}]
-		}
+		confRooms: []
 	};
 
 	getTagsCount = (tags) =>  {
@@ -71,7 +46,6 @@ export default class Dashboard extends Component {
 				eventDetails.push(newConfDetails);
 			}
 		});
-		console.log('eventDetails', eventDetails);
 		this.setState({ eventDetails });
 	}
 
@@ -109,10 +83,23 @@ export default class Dashboard extends Component {
 	}
 
 	getConfBarChart = (confRoom) =>  {
-		console.log('klslk');
+		let doughnutData = [];
+		let barChartData= {
+			labels: [],
+			datasets: [{
+				label: 'Present Users',
+				backgroundColor: 'rgb(255, 99, 132)',
+				borderColor: 'rgb(255, 99, 132)',
+				data: doughnutData
+			}]
+		};
+		confRoom.TagsCount.forEach((tag, index) => {
+			barChartData.labels.push(tag.id);
+			doughnutData.push(tag.count);
+		});
 		return (
 			<Bar
-				data={this.state.barChartData}
+				data={barChartData}
 				width={100}
 				height={50}
 				options={{
