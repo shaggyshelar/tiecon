@@ -5,20 +5,40 @@ import Card from 'preact-material-components/Card';
 import 'preact-material-components/Card/style.css';
 import 'preact-material-components/Button/style.css';
 import _ from 'lodash';
-import { Bar } from 'react-chartjs-2';
-
+import { Bar, Doughnut } from 'react-chartjs-2';
 
 export default class Dashboard extends Component {
 	state = {
 		eventDetails: [],
 		usersInEvents: [],
-		chartData: {
-			labels: ["January", "February", "March", "April", "May", "June", "July"],
+		confRooms: [],
+		barChartData: {
+			labels: ["NGO", "AI", "Technology", "Startup", "Business"],
 			datasets: [{
-				label: "My First dataset",
+				label: "Present Users",
 				backgroundColor: 'rgb(255, 99, 132)',
 				borderColor: 'rgb(255, 99, 132)',
-				data: [0, 10, 5, 2, 20, 30, 45],
+				data: [2, 10, 5, 20, 30],
+			}]
+		},
+		doughnutChartData: {
+			labels: [
+				'NGO',
+				'AI',
+				'Technology'
+			],
+			datasets: [{
+				data: [15, 20, 15],
+				backgroundColor: [
+					'#FF6384',
+					'#36A2EB',
+					'#FFCE56'
+				],
+				hoverBackgroundColor: [
+					'#FF6384',
+					'#36A2EB',
+					'#FFCE56'
+				]
 			}]
 		}
 	};
@@ -45,6 +65,14 @@ export default class Dashboard extends Component {
 					events.push(doc.data());
 				});
 				this.parseEventDetails(events);
+			});
+		db.collection('conferenceRooms')
+			.onSnapshot((querySnapshot) => {
+				let confRooms = [];
+				querySnapshot.forEach((doc) => {
+					confRooms.push(doc.data());
+				});
+				this.setState({ confRooms });
 			});
 	}
 
@@ -86,13 +114,19 @@ export default class Dashboard extends Component {
 				}
 
 				<Bar
-					data={this.state.chartData}
+					data={this.state.barChartData}
 					width={100}
 					height={50}
 					options={{
-						maintainAspectRatio: false
+						maintainAspectRatio: true,
+						title: {
+							display: true,
+							text: 'Attendance',
+							fontSize: 25
+						}
 					}}
 				/>
+				<Doughnut data={this.state.doughnutChartData} width={100} height={50} />
 			</div>
 		);
 	}
