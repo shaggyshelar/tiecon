@@ -1,13 +1,14 @@
 import { h, Component } from 'preact';
-import List from 'preact-material-components/List';
-import 'preact-material-components/List/style.css';
 import Card from 'preact-material-components/Card';
 import 'preact-material-components/Card/style.css';
 import 'preact-material-components/Button/style.css';
+import LayoutGrid from 'preact-material-components/LayoutGrid';
+import 'preact-material-components/LayoutGrid/style.css';
 import _ from 'lodash';
 import { Bar, Doughnut } from 'react-chartjs-2';
 
 const availableTags = ['NGO', 'AI', 'Technology', 'Startup', 'Business'];
+const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#E7E9ED', '#36A2EB'];
 
 export default class Dashboard extends Component {
 	state = {
@@ -107,6 +108,45 @@ export default class Dashboard extends Component {
 		window.removeEventListener('firebaseInitialized', this.firebaseInitialized);
 	}
 
+	getConfBarChart = (confRoom) =>  {
+		console.log('klslk');
+		return (
+			<Bar
+				data={this.state.barChartData}
+				width={100}
+				height={50}
+				options={{
+					maintainAspectRatio: true,
+				}}
+			/>
+		);
+	}
+	
+	getConfDoughnutChart = (confRoom) =>  {
+		let doughnutData = [];
+		let backgroundColors = [];
+		let doughnutChartData= {
+			labels: [],
+			datasets: [{
+				data: doughnutData,
+				backgroundColor: backgroundColors,
+				hoverBackgroundColor: backgroundColors
+			}]
+		};
+		confRoom.TagsCount.forEach((tag, index) => {
+			doughnutChartData.labels.push(tag.id);
+			doughnutData.push(tag.count);
+			backgroundColors.push(colors[index]);
+		});
+		return (
+			<Doughnut data={doughnutChartData} width={100} height={50} 
+				options={{
+					maintainAspectRatio: true,
+				}}
+			/>
+		);
+	}
+
 	render({}, { }) {
 		return (
 			<div>
@@ -114,15 +154,28 @@ export default class Dashboard extends Component {
 					this.state.eventDetails.map((eventDetail, index) => (
 						<Card>
 							<Card.Primary>
-								<Card.Title><h1>{ eventDetail.confRoomName}</h1></Card.Title>
-								<Card.Subtitle>Total Attendies: { eventDetail.users.length }</Card.Subtitle>
+								<Card.Title><b>{ eventDetail.confRoomName} </b> (Total Attendies: { eventDetail.users.length }/ 50)</Card.Title>
 							</Card.Primary>
 							<Card.Media className='card-media'>
-								{
-									eventDetail.users.map((user, index) => (
-										<div> {user.Name} </div>
-									))
-								}
+								<LayoutGrid>
+									<LayoutGrid.Inner>
+										<LayoutGrid.Cell cols="6">
+											{ this.getConfBarChart(eventDetail) }
+										</LayoutGrid.Cell>
+										<LayoutGrid.Cell cols="6">
+											{ this.getConfDoughnutChart(eventDetail) }
+										</LayoutGrid.Cell>
+									</LayoutGrid.Inner>
+									<LayoutGrid.Inner>
+										<LayoutGrid.Cell cols="12">
+											{
+												eventDetail.users.map((user, index) => (
+													<div> {user.Name} </div>
+												))
+											}
+										</LayoutGrid.Cell>
+									</LayoutGrid.Inner>
+								</LayoutGrid>
 							</Card.Media>
 							{/* <Card.Actions>
 								<Card.Action>OKAY</Card.Action>
@@ -130,21 +183,6 @@ export default class Dashboard extends Component {
 						</Card>
 					))
 				}
-
-				<Bar
-					data={this.state.barChartData}
-					width={100}
-					height={50}
-					options={{
-						maintainAspectRatio: true,
-						title: {
-							display: true,
-							text: 'Attendance',
-							fontSize: 25
-						}
-					}}
-				/>
-				<Doughnut data={this.state.doughnutChartData} width={100} height={50} />
 			</div>
 		);
 	}
