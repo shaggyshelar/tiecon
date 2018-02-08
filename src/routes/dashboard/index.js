@@ -7,26 +7,24 @@ import 'preact-material-components/Button/style.css';
 import _ from 'lodash';
 import { Bar, Doughnut } from 'react-chartjs-2';
 
+const availableTags = ['NGO', 'AI', 'Technology', 'Startup', 'Business'];
+
 export default class Dashboard extends Component {
 	state = {
 		eventDetails: [],
 		usersInEvents: [],
 		confRooms: [],
 		barChartData: {
-			labels: ["NGO", "AI", "Technology", "Startup", "Business"],
+			labels: availableTags,
 			datasets: [{
-				label: "Present Users",
+				label: 'Present Users',
 				backgroundColor: 'rgb(255, 99, 132)',
 				borderColor: 'rgb(255, 99, 132)',
-				data: [2, 10, 5, 20, 30],
+				data: [2, 10, 5, 20, 30]
 			}]
 		},
 		doughnutChartData: {
-			labels: [
-				'NGO',
-				'AI',
-				'Technology'
-			],
+			labels: availableTags,
 			datasets: [{
 				data: [15, 20, 15],
 				backgroundColor: [
@@ -43,17 +41,37 @@ export default class Dashboard extends Component {
 		}
 	};
 
+	getTagsCount = (tags) =>  {
+		let result = _.map(availableTags, (service) => {
+			let length = _.reject(tags, (el) => (el.indexOf(service) < 0)).length;
+			return { id: service, count: length };
+		});
+		return result;
+	}
+
 	parseEventDetails = (events) =>  {
-		let parseEventDetails = [];
+		let eventDetails = [];
 		events.forEach((doc) => {
-			let confRoom = _.find(parseEventDetails, { confRoomName: doc.ConfRoom });
+			let confRoom = _.find(eventDetails, { confRoomName: doc.ConfRoom.Name });
 			if (confRoom) {
+				let mergedTags = [];
+				_.forEach(confRoom.tags, (tag) => {
+					mergedTags.push(tag);
+				});
+				_.forEach(doc.Tags, (tag) => {
+					mergedTags.push(tag);
+				});
+				confRoom.tags = mergedTags;
+				confRoom.TagsCount = this.getTagsCount(confRoom.tags);
 				confRoom.users.push(doc);
 			} else {
-				parseEventDetails.push({ confRoomName: doc.ConfRoom, users: [doc] });
+				let newConfDetails = { confRoomName: doc.ConfRoom.Name, users: [doc], tags: doc.Tags };
+				newConfDetails.TagsCount = this.getTagsCount(doc.Tags);
+				eventDetails.push(newConfDetails);
 			}
 		});
-		this.setState({ 'eventDetails': parseEventDetails });
+		console.log('eventDetails', eventDetails);
+		this.setState({ eventDetails });
 	}
 
 	firebaseInitialized = () =>  {
