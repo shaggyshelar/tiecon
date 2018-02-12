@@ -87,7 +87,7 @@ export default class Dashboard extends Component {
 		let barChartData= {
 			labels: [],
 			datasets: [{
-				label: 'Present Users',
+				label: 'Users',
 				backgroundColor: 'rgb(255, 99, 132)',
 				borderColor: 'rgb(255, 99, 132)',
 				data: doughnutData
@@ -141,7 +141,7 @@ export default class Dashboard extends Component {
 					this.state.eventDetails.map((eventDetail, index) => (
 						<Card>
 							<Card.Primary>
-								<Card.Title><b>{ eventDetail.confRoomName} </b> (Total Attendies: { eventDetail.users.length }/ 50)</Card.Title>
+								<Card.Title><b>{ eventDetail.confRoomName} </b> (Total Attendies: { eventDetail.users.length }/ 10)</Card.Title>
 							</Card.Primary>
 							<Card.Media className='card-media'>
 								<LayoutGrid>
